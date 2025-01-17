@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Famous Paintings Comparison</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        
+        .comparison-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            gap: 20px;
+        }
+        
+        .image-container {
+            text-align: center;
+            width: 45%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 400px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .artwork-info {
+            margin: 15px 0;
+            font-size: 14px;
+            min-height: 80px;
+        }
+        
+        .artwork-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .artwork-artist {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .artwork-year {
+            color: #888;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .dont-know {
+            margin-top: 20px;
+        }
+
+        .dont-know button {
+            background-color: #888;
+        }
+
+        .dont-know button:hover {
+            background-color: #666;
+        }
+
+        #progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            height: 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <h1>Which painting do you prefer?</h1>
+    
+    <div class="comparison-container" id="comparison">
+        <div class="image-container">
+            <img id="left-image" src="" alt="Left Painting">
+            <div class="artwork-info">
+                <div class="artwork-title" id="left-title"></div>
+                <div class="artwork-artist" id="left-artist"></div>
+                <div class="artwork-year" id="left-year"></div>
+            </div>
+            <button onclick="selectImage('left')">Select Left Painting</button>
+        </div>
+        
+        <div class="image-container">
+            <img id="right-image" src="" alt="Right Painting">
+            <div class="artwork-info">
+                <div class="artwork-title" id="right-title"></div>
+                <div class="artwork-artist" id="right-artist"></div>
+                <div class="artwork-year" id="right-year"></div>
+            </div>
+            <button onclick="selectImage('right')">Select Right Painting</button>
+        </div>
+    </div>
+
+    <div class="dont-know">
+        <button onclick="dontKnow()">Don't know either painting</button>
+    </div>
+
+    <div class="stats">
+        <div>Comparisons made: <span id="comparison-count">0</span></div>
+        <div>Progress:</div>
+        <div id="progress-bar">
+            <div id="progress-fill"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initial set of famous paintings (public domain images)
+        const paintings = [
+            {
+                id: "1",
+                title: "The Starry Night",
+                artist: "Vincent van Gogh",
+                year: "1889",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+            },
+            {
+                id: "2",
+                title: "The Great Wave off Kanagawa",
+                artist: "Hokusai",
+                year: "1829-1833",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/1280px-Tsunami_by_hokusai_19th_century.jpg"
+            },
+            {
+                id: "3",
+                title: "The Persistence of Memory",
+                artist: "Salvador Dalí",
+                year: "1931",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/The_Persistence_of_Memory.jpg/1280px-The_Persistence_of_Memory.jpg"
+            },
+            {
+                id: "4",
+                title: "Girl with a Pearl Earring",
+                artist: "Johannes Vermeer",
+                year: "1665",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/800px-1665_Girl_with_a_Pearl_Earring.jpg"
+            },
+            {
+                id: "5",
+                title: "The Night Watch",
+                artist: "Rembrandt",
+                year: "1642",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/The_Night_Watch_-_HD.jpg/1280px-The_Night_Watch_-_HD.jpg"
+            },
+            {
+                id: "6",
+                title: "The Scream",
+                artist: "Edvard Munch",
+                year: "1893",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg/800px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg"
+            },
+            {
+                id: "7",
+                title: "The Garden of Earthly Delights",
+                artist: "Hieronymus Bosch",
+                year: "1490-1510",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/The_Garden_of_earthly_delights.jpg/1280px-The_Garden_of_earthly_delights.jpg"
+            },
+            {
+                id: "8",
+                title: "The Kiss",
+                artist: "Gustav Klimt",
+                year: "1907-1908",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg/800px-The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg"
+            },
+            {
+                id: "9",
+                title: "The Birth of Venus",
+                artist: "Sandro Botticelli",
+                year: "1485",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/1280px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg"
+            },
+            {
+                id: "10",
+                title: "Water Lilies",
+                artist: "Claude Monet",
+                year: "1919",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Cli_monet_water_lilies_1919.jpg/1280px-Cli_monet_water_lilies_1919.jpg"
+            }
+        ];
+
+        let comparisonCount = 0;
+        let currentPair = [];
+        let comparisons = [];
+        const TOTAL_NEEDED = 120; // Target number of comparisons
+
+        // Initialize
+        function initialize() {
+            loadNewComparison();
+            updateStats();
+        }
+
+        // Load a new random pair of paintings
+        function loadNewComparison() {
+            // Get two random paintings
+            const available = paintings.filter(p => !currentPair.includes(p));
+            if (available.length < 2) {
+                alert("No more unique pairs available!");
+                return;
+            }
+
+            currentPair = [];
+            const idx1 = Math.floor(Math.random() * available.length);
+            currentPair.push(available[idx1]);
+            available.splice(idx1, 1);
+            const idx2 = Math.floor(Math.random() * available.length);
+            currentPair.push(available[idx2]);
+
+            // Update the display
+            document.getElementById('left-image').src = currentPair[0].image;
+            document.getElementById('left-title').textContent = currentPair[0].title;
+            document.getElementById('left-artist').textContent = currentPair[0].artist;
+            document.getElementById('left-year').textContent = currentPair[0].year;
+
+            document.getElementById('right-image').src = currentPair[1].image;
+            document.getElementById('right-title').textContent = currentPair[1].title;
+            document.getElementById('right-artist').textContent = currentPair[1].artist;
+            document.getElementById('right-year').textContent = currentPair[1].year;
+        }
+
+        function selectImage(side) {
+            if (currentPair.length !== 2) return;
+
+            const winner = side === 'left' ? currentPair[0] : currentPair[1];
+            const loser = side === 'left' ? currentPair[1] : currentPair[0];
+
+            comparisons.push({
+                winner: winner.id,
+                loser: loser.id,
+                timestamp: Date.now(),
+                type: 'preference'
+            });
+
+            comparisonCount++;
+            updateStats();
+            loadNewComparison();
+        }
+
+        function dontKnow() {
+            if (currentPair.length !== 2) return;
+
+            comparisons.push({
+                painting1: currentPair[0].id,
+                painting2: currentPair[1].id,
+                timestamp: Date.now(),
+                type: 'unknown'
+            });
+
+            loadNewComparison();
+        }
+
+        function updateStats() {
+            document.getElementById('comparison-count').textContent = comparisonCount;
+            const progress = (comparisonCount / TOTAL_NEEDED) * 100;
+            document.getElementById('progress-fill').style.width = `${Math.min(100, progress)}%`;
+            
+            // Save comparisons to localStorage
+            localStorage.setItem('artComparisons', JSON.stringify(comparisons));
+            localStorage.setItem('comparisonCount', comparisonCount.toString());
+        }
+
+        // Load saved progress
+        const savedComparisons = localStorage.getItem('artComparisons');
+        const savedCount = localStorage.getItem('comparisonCount');
+        if (savedComparisons && savedCount) {
+            comparisons = JSON.parse(savedComparisons);
+            comparisonCount = parseInt(savedCount);
+            updateStats();
+        }
+
+        // Start the application
+        initialize();
+    </script>
+</body>
+</html>

@@ -188,8 +188,7 @@
 
 <script>
         // Initial set of paintings array (keep your existing 32 paintings here)
-        let paintings = [
-                   const paintings = [
+ const paintings = [
             {
         id: "1",
         title: "Mona Lisa",
@@ -415,9 +414,9 @@
     image: "https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg"
 }
 ];
-        ].map(painting => ({
+             ].map(painting => ({
             ...painting,
-            elo: 1400,  // Starting ELO rating
+            elo: 1400,
             wins: 0,
             matches: 0
         }));

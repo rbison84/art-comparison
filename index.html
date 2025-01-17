@@ -153,74 +153,113 @@
         // Initial set of famous paintings (public domain images)
         const paintings = [
             {
-                id: "1",
-                title: "The Starry Night",
-                artist: "Vincent van Gogh",
-                year: "1889",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
-            },
-            {
-                id: "2",
-                title: "The Great Wave off Kanagawa",
-                artist: "Hokusai",
-                year: "1829-1833",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/1280px-Tsunami_by_hokusai_19th_century.jpg"
-            },
-            {
-                id: "3",
-                title: "The Persistence of Memory",
-                artist: "Salvador Dalí",
-                year: "1931",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/The_Persistence_of_Memory.jpg/1280px-The_Persistence_of_Memory.jpg"
-            },
-            {
-                id: "4",
-                title: "Girl with a Pearl Earring",
-                artist: "Johannes Vermeer",
-                year: "1665",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/800px-1665_Girl_with_a_Pearl_Earring.jpg"
-            },
-            {
-                id: "5",
-                title: "The Night Watch",
-                artist: "Rembrandt",
-                year: "1642",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/The_Night_Watch_-_HD.jpg/1280px-The_Night_Watch_-_HD.jpg"
-            },
-            {
-                id: "6",
-                title: "The Scream",
-                artist: "Edvard Munch",
-                year: "1893",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg/800px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg"
-            },
-            {
-                id: "7",
-                title: "The Garden of Earthly Delights",
-                artist: "Hieronymus Bosch",
-                year: "1490-1510",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/The_Garden_of_earthly_delights.jpg/1280px-The_Garden_of_earthly_delights.jpg"
-            },
-            {
-                id: "8",
-                title: "The Kiss",
-                artist: "Gustav Klimt",
-                year: "1907-1908",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg/800px-The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg"
-            },
-            {
-                id: "9",
-                title: "The Birth of Venus",
-                artist: "Sandro Botticelli",
-                year: "1485",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/1280px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg"
-            },
-            {
-                id: "10",
-                title: "Water Lilies",
-                artist: "Claude Monet",
-                year: "1919",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Cli_monet_water_lilies_1919.jpg/1280px-Cli_monet_water_lilies_1919.jpg"
+                const paintings = [
+    {
+        id: "1",
+        title: "Mona Lisa",
+        artist: "Leonardo da Vinci",
+        year: "1503-1519",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/687px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg"
+    },
+    {
+        id: "2",
+        title: "The Starry Night",
+        artist: "Vincent van Gogh",
+        year: "1889",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+    },
+    {
+        id: "3",
+        title: "Girl with a Pearl Earring",
+        artist: "Johannes Vermeer",
+        year: "1665",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/800px-1665_Girl_with_a_Pearl_Earring.jpg"
+    },
+    {
+        id: "4",
+        title: "The Birth of Venus",
+        artist: "Sandro Botticelli",
+        year: "1485",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/2560px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg"
+    },
+    {
+        id: "5",
+        title: "The Last Supper",
+        artist: "Leonardo da Vinci",
+        year: "1495-1498",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/%C3%9Altima_Cena_-_Da_Vinci_5.jpg/2560px-%C3%9Altima_Cena_-_Da_Vinci_5.jpg"
+    },
+    {
+        id: "6",
+        title: "The Scream",
+        artist: "Edvard Munch",
+        year: "1893",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg/1280px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg"
+    },
+    {
+        id: "7",
+        title: "The Night Watch",
+        artist: "Rembrandt",
+        year: "1642",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/The_Night_Watch_-_HD.jpg/1920px-The_Night_Watch_-_HD.jpg"
+    },
+    {
+        id: "8",
+        title: "The Kiss",
+        artist: "Gustav Klimt",
+        year: "1907-1908",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg/1280px-The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg"
+    },
+    {
+        id: "9",
+        title: "The Persistence of Memory",
+        artist: "Salvador Dalí",
+        year: "1931",
+        image: "https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg"
+    },
+    {
+        id: "10",
+        title: "The Creation of Adam",
+        artist: "Michelangelo",
+        year: "1508-1512",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/2560px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg"
+    },
+    {
+        id: "11",
+        title: "Water Lilies",
+        artist: "Claude Monet",
+        year: "1919",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Claude_Monet_-_Water_Lilies_-_Google_Art_Project_%28462013%29.jpg/2560px-Claude_Monet_-_Water_Lilies_-_Google_Art_Project_%28462013%29.jpg"
+    },
+    {
+        id: "12",
+        title: "The Great Wave off Kanagawa",
+        artist: "Hokusai",
+        year: "1829-1833",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/2560px-Tsunami_by_hokusai_19th_century.jpg"
+    },
+    {
+        id: "13",
+        title: "The Garden of Earthly Delights",
+        artist: "Hieronymus Bosch",
+        year: "1490-1510",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/The_Garden_of_Earthly_Delights.jpg/2560px-The_Garden_of_Earthly_Delights.jpg"
+    },
+    {
+        id: "14",
+        title: "Las Meninas",
+        artist: "Diego Velázquez",
+        year: "1656",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Las_Meninas%2C_by_Diego_Vel%C3%A1zquez%2C_from_Prado_in_Google_Earth.jpg/1280px-Las_Meninas%2C_by_Diego_Vel%C3%A1zquez%2C_from_Prado_in_Google_Earth.jpg"
+    },
+    {
+        id: "15",
+        title: "American Gothic",
+        artist: "Grant Wood",
+        year: "1930",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Grant_Wood_-_American_Gothic_-_Google_Art_Project.jpg/1280px-Grant_Wood_-_American_Gothic_-_Google_Art_Project.jpg"
+    }
+];
             }
         ];
 

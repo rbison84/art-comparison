@@ -110,37 +110,36 @@
             width: 0%;
             transition: width 0.3s;
         }
-    ```css
-.rankings-section {
-    margin-top: 30px;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
 
-.rankings-grid {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 10px;
-    text-align: left;
-    margin-top: 15px;
-}
+        .rankings-section {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-.rank-item {
-    display: contents;
-}
+        .rankings-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            text-align: left;
+            margin-top: 15px;
+        }
 
-.rank-number {
-    font-weight: bold;
-    color: #666;
-    padding: 5px 10px;
-}
+        .rank-item {
+            display: contents;
+        }
 
-.rank-info {
-    padding: 5px 0;
-}
-```
+        .rank-number {
+            font-weight: bold;
+            color: #666;
+            padding: 5px 10px;
+        }
+
+        .rank-info {
+            padding: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -180,9 +179,17 @@
         </div>
     </div>
 
-    <script>
-        // Initial set of famous paintings (public domain images)
-        const paintings = [
+    <div class="rankings-section">
+        <h2>Current Rankings</h2>
+        <div id="rankings-list" class="rankings-grid">
+            <!-- Rankings will be inserted here -->
+        </div>
+    </div>
+
+<script>
+        // Initial set of paintings array (keep your existing 32 paintings here)
+        let paintings = [
+                   const paintings = [
             {
         id: "1",
         title: "Mona Lisa",
@@ -408,163 +415,141 @@
     image: "https://upload.wikimedia.org/wikipedia/en/7/74/PicassoGuernica.jpg"
 }
 ];
+        ].map(painting => ({
+            ...painting,
+            elo: 1400,  // Starting ELO rating
+            wins: 0,
+            matches: 0
+        }));
 
-// Initialize paintings with ELO ratings
-const paintings = YOUR_EXISTING_PAINTINGS_ARRAY.map(painting => ({
-    ...painting,
-    elo: 1400,  // Starting ELO rating
-    wins: 0,
-    matches: 0
-}));
+        let comparisonCount = 0;
+        let currentPair = [];
+        let comparisons = [];
+        const TOTAL_NEEDED = 120;
+        const K_FACTOR = 32; // ELO K-factor, determines how much ratings change
 
-let comparisonCount = 0;
-let currentPair = [];
-let comparisons = [];
-const TOTAL_NEEDED = 120;
-const K_FACTOR = 32; // ELO K-factor, determines how much ratings change
-
-// Initialize
-function initialize() {
-    loadNewComparison();
-    updateStats();
-    updateRankings();
-}
-
-// Load a new random pair of paintings
-function loadNewComparison() {
-    const available = paintings.filter(p => !currentPair.includes(p));
-    if (available.length < 2) {
-        alert("No more unique pairs available!");
-        return;
-    }
-
-    currentPair = [];
-    const idx1 = Math.floor(Math.random() * available.length);
-    currentPair.push(available[idx1]);
-    available.splice(idx1, 1);
-    const idx2 = Math.floor(Math.random() * available.length);
-    currentPair.push(available[idx2]);
-
-    document.getElementById('left-image').src = currentPair[0].image;
-    document.getElementById('left-title').textContent = currentPair[0].title;
-    document.getElementById('left-artist').textContent = currentPair[0].artist;
-    document.getElementById('left-year').textContent = currentPair[0].year;
-
-    document.getElementById('right-image').src = currentPair[1].image;
-    document.getElementById('right-title').textContent = currentPair[1].title;
-    document.getElementById('right-artist').textContent = currentPair[1].artist;
-    document.getElementById('right-year').textContent = currentPair[1].year;
-}
-
-function updateEloRatings(winner, loser) {
-    // Calculate expected scores
-    const expectedWinner = 1 / (1 + Math.pow(10, (loser.elo - winner.elo) / 400));
-    const expectedLoser = 1 / (1 + Math.pow(10, (winner.elo - loser.elo) / 400));
-
-    // Update ELO ratings
-    winner.elo += K_FACTOR * (1 - expectedWinner);
-    loser.elo += K_FACTOR * (0 - expectedLoser);
-
-    // Update match counts
-    winner.matches++;
-    loser.matches++;
-    winner.wins++;
-}
-
-function selectImage(side) {
-    if (currentPair.length !== 2) return;
-
-    const winner = side === 'left' ? currentPair[0] : currentPair[1];
-    const loser = side === 'left' ? currentPair[1] : currentPair[0];
-
-    // Update ELO ratings
-    updateEloRatings(winner, loser);
-
-    comparisons.push({
-        winner: winner.id,
-        loser: loser.id,
-        timestamp: Date.now(),
-        type: 'preference'
-    });
-
-    comparisonCount++;
-    updateStats();
-    updateRankings();
-    loadNewComparison();
-}
-
-function dontKnow() {
-    if (currentPair.length !== 2) return;
-
-    comparisons.push({
-        painting1: currentPair[0].id,
-        painting2: currentPair[1].id,
-        timestamp: Date.now(),
-        type: 'unknown'
-    });
-
-    loadNewComparison();
-}
-
-function updateRankings() {
-    // Sort paintings by ELO rating
-    const rankedPaintings = [...paintings].sort((a, b) => b.elo - a.elo);
-    
-    // Update rankings display
-    const rankingsList = document.getElementById('rankings-list');
-    rankingsList.innerHTML = rankedPaintings.map((painting, index) => `
-        <div class="rank-item">
-            <div class="rank-number">${index + 1}</div>
-            <div class="rank-info">
-                ${painting.title} (${painting.artist})
-            </div>
-        </div>
-    `).join('');
-}
-
-function updateStats() {
-    document.getElementById('comparison-count').textContent = comparisonCount;
-    const progress = (comparisonCount / TOTAL_NEEDED) * 100;
-    document.getElementById('progress-fill').style.width = `${Math.min(100, progress)}%`;
-    
-    // Save state to localStorage
-    const saveState = {
-        comparisons,
-        comparisonCount,
-        paintings  // Save current ELO ratings
-    };
-    localStorage.setItem('artComparisons', JSON.stringify(saveState));
-}
-
-// Load saved progress
-const savedState = localStorage.getItem('artComparisons');
-if (savedState) {
-    const state = JSON.parse(savedState);
-    comparisons = state.comparisons;
-    comparisonCount = state.comparisonCount;
-    // Restore ELO ratings
-    state.paintings.forEach((savedPainting) => {
-        const painting = paintings.find(p => p.id === savedPainting.id);
-        if (painting) {
-            painting.elo = savedPainting.elo;
-            painting.wins = savedPainting.wins;
-            painting.matches = savedPainting.matches;
+        function initialize() {
+            loadNewComparison();
+            updateStats();
+            updateRankings();
         }
-    });
-    updateStats();
-    updateRankings();
-}
 
-// Start the application
-initialize();
+        function loadNewComparison() {
+            const available = paintings.filter(p => !currentPair.includes(p));
+            if (available.length < 2) {
+                alert("No more unique pairs available!");
+                return;
+            }
+
+            currentPair = [];
+            const idx1 = Math.floor(Math.random() * available.length);
+            currentPair.push(available[idx1]);
+            available.splice(idx1, 1);
+            const idx2 = Math.floor(Math.random() * available.length);
+            currentPair.push(available[idx2]);
+
+            document.getElementById('left-image').src = currentPair[0].image;
+            document.getElementById('left-title').textContent = currentPair[0].title;
+            document.getElementById('left-artist').textContent = currentPair[0].artist;
+            document.getElementById('left-year').textContent = currentPair[0].year;
+
+            document.getElementById('right-image').src = currentPair[1].image;
+            document.getElementById('right-title').textContent = currentPair[1].title;
+            document.getElementById('right-artist').textContent = currentPair[1].artist;
+            document.getElementById('right-year').textContent = currentPair[1].year;
+        }
+
+        function updateEloRatings(winner, loser) {
+            const expectedWinner = 1 / (1 + Math.pow(10, (loser.elo - winner.elo) / 400));
+            const expectedLoser = 1 / (1 + Math.pow(10, (winner.elo - loser.elo) / 400));
+
+            winner.elo += K_FACTOR * (1 - expectedWinner);
+            loser.elo += K_FACTOR * (0 - expectedLoser);
+
+            winner.matches++;
+            loser.matches++;
+            winner.wins++;
+        }
+
+        function selectImage(side) {
+            if (currentPair.length !== 2) return;
+
+            const winner = side === 'left' ? currentPair[0] : currentPair[1];
+            const loser = side === 'left' ? currentPair[1] : currentPair[0];
+
+            updateEloRatings(winner, loser);
+
+            comparisons.push({
+                winner: winner.id,
+                loser: loser.id,
+                timestamp: Date.now(),
+                type: 'preference'
+            });
+
+            comparisonCount++;
+            updateStats();
+            updateRankings();
+            loadNewComparison();
+        }
+
+        function dontKnow() {
+            if (currentPair.length !== 2) return;
+
+            comparisons.push({
+                painting1: currentPair[0].id,
+                painting2: currentPair[1].id,
+                timestamp: Date.now(),
+                type: 'unknown'
+            });
+
+            loadNewComparison();
+        }
+
+        function updateRankings() {
+            const rankedPaintings = [...paintings].sort((a, b) => b.elo - a.elo);
+            const rankingsList = document.getElementById('rankings-list');
+            rankingsList.innerHTML = rankedPaintings.map((painting, index) => `
+                <div class="rank-item">
+                    <div class="rank-number">${index + 1}</div>
+                    <div class="rank-info">
+                        ${painting.title} (${painting.artist})
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('comparison-count').textContent = comparisonCount;
+            const progress = (comparisonCount / TOTAL_NEEDED) * 100;
+            document.getElementById('progress-fill').style.width = `${Math.min(100, progress)}%`;
+            
+            const saveState = {
+                comparisons,
+                comparisonCount,
+                paintings
+            };
+            localStorage.setItem('artComparisons', JSON.stringify(saveState));
+        }
+
+        const savedState = localStorage.getItem('artComparisons');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            comparisons = state.comparisons;
+            comparisonCount = state.comparisonCount;
+            
+            state.paintings.forEach((savedPainting) => {
+                const painting = paintings.find(p => p.id === savedPainting.id);
+                if (painting) {
+                    painting.elo = savedPainting.elo;
+                    painting.wins = savedPainting.wins;
+                    painting.matches = savedPainting.matches;
+                }
+            });
+            updateStats();
+            updateRankings();
+        }
+
+        initialize();
     </script>
-    ```html
-<div class="rankings-section">
-    <h2>Current Rankings</h2>
-    <div id="rankings-list" class="rankings-grid">
-        <!-- Rankings will be inserted here -->
-    </div>
-</div>
-```
 </body>
 </html>

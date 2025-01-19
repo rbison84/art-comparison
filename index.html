@@ -141,6 +141,41 @@
             padding: 5px 0;
         }
 
+.stability-metrics {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.stability-metrics h3 {
+    margin: 0 0 15px 0;
+    color: #444;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    text-align: left;
+}
+
+.metric {
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.metric-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.metric-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
     </style>
 </head>
 <body>
@@ -177,6 +212,27 @@
     <div>Progress:</div>
     <div id="progress-bar">
         <div id="progress-fill"></div>
+    </div>
+    <div class="stability-metrics">
+        <h3>Ranking Stability Metrics</h3>
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-label">Average Movement</div>
+                <div class="metric-value" id="avg-movement">-</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Max Position Change</div>
+                <div class="metric-value" id="max-movement">-</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Big Movers (>5%)</div>
+                <div class="metric-value" id="big-movers">-</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Top 10 Stability</div>
+                <div class="metric-value" id="top-stability">-</div>
+            </div>
+        </div>
     </div>
 </div>
 

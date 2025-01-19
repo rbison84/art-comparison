@@ -360,16 +360,28 @@
         let comparisonCount = 0;
         let currentPair = [];
         let comparisons = [];
+        let baselineRanking = null;  // Add this with your other global variables at the top
+const BASELINE_COMPARISONS = 50;  // Add this constant
         const TOTAL_NEEDED = 120;
         const K_FACTOR = 32;
 
 function calculateMovements() {
-    if (comparisonCount === 0) return {
-        averageMovement: 0,
-        maxMovement: 0,
-        bigMovers: 0,
-        topStability: 100
+    if (!baselineRanking) return null;
+
+    const currentRanking = [...paintings].sort((a, b) => b.elo - a.elo);
+    
+    const movements = currentRanking.map((painting, currentIndex) => {
+        const baselinePosition = baselineRanking.findIndex(p => p.id === painting.id);
+        return Math.abs(currentIndex - baselinePosition);
+    });
+
+    return {
+        averageMovement: movements.reduce((sum, m) => sum + m, 0) / movements.length,
+        maxMovement: Math.max(...movements),
+        bigMovers: movements.filter(m => m > paintings.length * 0.05).length,
+        topStability: (1 - movements.slice(0, 10).reduce((sum, m) => sum + m, 0) / 50) * 100
     };
+}
 
     // Calculate current positions
     const currentRanking = [...paintings].sort((a, b) => b.elo - a.elo);
@@ -483,27 +495,39 @@ function updateStats() {
     const progress = (comparisonCount / TOTAL_NEEDED) * 100;
     document.getElementById('progress-fill').style.width = `${Math.min(100, progress)}%`;
     
-    // Update stability metrics
-    document.querySelector('.stability-metrics').style.display = 'block';
-    const metrics = calculateMovements();
-    document.getElementById('avg-movement').textContent = `${metrics.averageMovement.toFixed(1)}`;
-    document.getElementById('max-movement').textContent = `${metrics.maxMovement}`;
-    document.getElementById('big-movers').textContent = `${metrics.bigMovers}`;
-    document.getElementById('top-stability').textContent = `${metrics.topStability.toFixed(1)}%`;
+    // Only show and calculate stability metrics after 50 comparisons
+    if (comparisonCount >= BASELINE_COMPARISONS) {
+        // Set baseline ranking if we just hit 50 comparisons
+        if (comparisonCount === BASELINE_COMPARISONS) {
+            baselineRanking = [...paintings].sort((a, b) => b.elo - a.elo)
+                .map(p => ({ id: p.id, baselineRank: p.elo }));
+        }
+        
+        document.querySelector('.stability-metrics').style.display = 'block';
+        const metrics = calculateMovements();
+        document.getElementById('avg-movement').textContent = `${metrics.averageMovement.toFixed(1)}`;
+        document.getElementById('max-movement').textContent = `${metrics.maxMovement}`;
+        document.getElementById('big-movers').textContent = `${metrics.bigMovers}`;
+        document.getElementById('top-stability').textContent = `${metrics.topStability.toFixed(1)}%`;
+    } else {
+        document.querySelector('.stability-metrics').style.display = 'none';
+    }
     
     const saveState = {
         comparisons,
         comparisonCount,
-        paintings
+        paintings,
+        baselineRanking  // Save baseline ranking too
     };
     localStorage.setItem('artComparisons', JSON.stringify(saveState));
 }
 
-        const savedState = localStorage.getItem('artComparisons');
+        const savedState = localStorage.getItem('artComparisons');   
         if (savedState) {
             const state = JSON.parse(savedState);
             comparisons = state.comparisons;
             comparisonCount = state.comparisonCount;
+            baselineRanking = state.baselineRanking;  // Load baseline ranking
             
             state.paintings.forEach((savedPainting) => {
                 const painting = paintings.find(p => p.id === savedPainting.id);

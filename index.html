@@ -145,7 +145,6 @@
     margin-top: 20px;
     padding-top: 15px;
     border-top: 1px solid #eee;
-    display: none; /* Start hidden */
 }
 
 .stability-metrics h3 {
@@ -364,6 +363,31 @@
         const TOTAL_NEEDED = 120;
         const K_FACTOR = 32;
 
+function calculateMovements() {
+    if (comparisonCount === 0) return {
+        averageMovement: 0,
+        maxMovement: 0,
+        bigMovers: 0,
+        topStability: 100
+    };
+
+    // Calculate current positions
+    const currentRanking = [...paintings].sort((a, b) => b.elo - a.elo);
+    const previousRanking = [...paintings].sort((a, b) => b.matches - a.matches);
+    
+    const movements = currentRanking.map((painting, currentIndex) => {
+        const previousIndex = previousRanking.findIndex(p => p.id === painting.id);
+        return Math.abs(currentIndex - previousIndex);
+    });
+
+    return {
+        averageMovement: movements.reduce((sum, m) => sum + m, 0) / movements.length,
+        maxMovement: Math.max(...movements),
+        bigMovers: movements.filter(m => m > paintings.length * 0.05).length,
+        topStability: (1 - movements.slice(0, 10).reduce((sum, m) => sum + m, 0) / 50) * 100
+    };
+}
+        
         function initialize() {
             loadNewComparison();
             updateStats();
@@ -454,18 +478,26 @@
             `).join('');
         }
 
-        function updateStats() {
-            document.getElementById('comparison-count').textContent = comparisonCount;
-            const progress = (comparisonCount / TOTAL_NEEDED) * 100;
-            document.getElementById('progress-fill').style.width = `${Math.min(100, progress)}%`;
-            
-            const saveState = {
-                comparisons,
-                comparisonCount,
-                paintings
-            };
-            localStorage.setItem('artComparisons', JSON.stringify(saveState));
-        }
+function updateStats() {
+    document.getElementById('comparison-count').textContent = comparisonCount;
+    const progress = (comparisonCount / TOTAL_NEEDED) * 100;
+    document.getElementById('progress-fill').style.width = `${Math.min(100, progress)}%`;
+    
+    // Update stability metrics
+    document.querySelector('.stability-metrics').style.display = 'block';
+    const metrics = calculateMovements();
+    document.getElementById('avg-movement').textContent = `${metrics.averageMovement.toFixed(1)}`;
+    document.getElementById('max-movement').textContent = `${metrics.maxMovement}`;
+    document.getElementById('big-movers').textContent = `${metrics.bigMovers}`;
+    document.getElementById('top-stability').textContent = `${metrics.topStability.toFixed(1)}%`;
+    
+    const saveState = {
+        comparisons,
+        comparisonCount,
+        paintings
+    };
+    localStorage.setItem('artComparisons', JSON.stringify(saveState));
+}
 
         const savedState = localStorage.getItem('artComparisons');
         if (savedState) {

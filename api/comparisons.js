@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
         console.log('Attempting connection...');
         await client.connect();
         console.log('Connected successfully');
-        const db = client.db("art-rankings");
+        const db = client.db("art-ranking");
         
         if (req.method === 'POST') {
             console.log('Received data:', req.body);

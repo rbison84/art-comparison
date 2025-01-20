@@ -567,19 +567,23 @@ function selectImage(side) {
     });
 
 fetch('https://art-comparison.vercel.app/api/comparisons.js', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            winner: winner.id,
-            loser: loser.id,
-            type: 'preference'
-        })
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+        winner: winner.id,
+        loser: loser.id,
+        type: 'preference'
     })
-    .then(response => response.json())
-    .then(data => console.log('Database save:', data))
-    .catch(error => console.log('Database save failed:', error));
+})
+.then(response => {
+    console.log('Response status:', response.status);
+    return response.json();
+})
+.then(data => console.log('Response data:', data))
+.catch(error => console.log('Error:', error));
 
     // Update local state and UI
     updateEloRatings(winner, loser);

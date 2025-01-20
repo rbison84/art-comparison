@@ -560,10 +560,27 @@ function selectImage(side) {
     const winner = side === 'left' ? currentPair[0] : currentPair[1];
     const loser = side === 'left' ? currentPair[1] : currentPair[0];
 
-    console.log('Making comparison:', {
+    // First update the UI and local state
+    updateEloRatings(winner, loser);
+    comparisonCount++;
+    updateStats();
+    updateRankings();
+
+    // Store comparison locally
+    comparisons.push({
         winner: winner.id,
-        loser: loser.id
+        loser: loser.id,
+        timestamp: Date.now(),
+        type: 'preference'
     });
+
+    // Load new comparison immediately to keep the UI responsive
+    loadNewComparison();
+
+    // Then try to save to database in the background
+    const API_BASE_URL = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3000' 
+        : '';
 
     fetch(`${API_BASE_URL}/api/comparisons`, {
         method: 'POST',
@@ -576,25 +593,22 @@ function selectImage(side) {
             type: 'preference'
         })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Comparison saved successfully:', data);
-        // Update UI accordingly
-        updateEloRatings(winner, loser);
-        comparisonCount++;
-        updateStats();
-        updateRankings();
-        loadNewComparison();
+        console.log('Comparison saved to database:', data);
     })
     .catch(error => {
-        console.error('Error saving comparison:', error);
-        alert('Error saving comparison. Please try again.');
+        console.log('Note: Comparison saved locally but database save failed:', error);
+        // Don't alert the user - just log to console to avoid interrupting the experience
     });
+
+    // Save state to localStorage
+    const saveState = {
+        comparisons,
+        comparisonCount,
+        paintings
+    };
+    localStorage.setItem('artComparisons', JSON.stringify(saveState));
 }
 
         function dontKnow() {

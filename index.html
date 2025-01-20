@@ -72,10 +72,6 @@ const API_BASE_URL = window.location.hostname === 'localhost'
     padding: 8px;
     margin-right: 10px;
 }
-
-#comparison {
-    display: none;
-}
         
         button {
             padding: 12px 24px;
@@ -512,10 +508,18 @@ let currentUser = '';
 
 function setUsername() {
     const usernameInput = document.getElementById('username');
+    console.log('Username input found:', usernameInput); // Debug line
     currentUser = usernameInput.value.trim();
+    console.log('Current user set to:', currentUser); // Debug line
+    
     if (currentUser) {
+        console.log('Setting user and showing comparison'); // Debug line
         usernameInput.disabled = true;
-        document.getElementById('comparison').style.display = 'flex';
+        const comparisonDiv = document.getElementById('comparison');
+        console.log('Comparison div:', comparisonDiv); // Debug line
+        if (comparisonDiv) {
+            comparisonDiv.style.display = 'flex';
+        }
     } else {
         alert('Please enter a name');
     }

@@ -63,6 +63,20 @@ const API_BASE_URL = window.location.hostname === 'localhost'
             color: #888;
         }
         
+    /* Add these with your other CSS styles in <style> */
+.user-input {
+    margin-bottom: 20px;
+}
+
+.user-input input {
+    padding: 8px;
+    margin-right: 10px;
+}
+
+#comparison {
+    display: none;
+}
+        
         button {
             padding: 12px 24px;
             font-size: 16px;
@@ -184,6 +198,13 @@ const API_BASE_URL = window.location.hostname === 'localhost'
 </head>
 <body>
     <h1>Which painting do you prefer?</h1>
+
+    <!-- Add this right after your <h1> tag -->
+<div class="user-input">
+    <label for="username">Your Name:</label>
+    <input type="text" id="username" placeholder="Enter your name">
+    <button onclick="setUsername()">Set Name</button>
+</div>
     
     <div class="comparison-container" id="comparison">
         <div class="image-container">
@@ -486,7 +507,22 @@ const API_BASE_URL = window.location.hostname === 'localhost'
         const TOTAL_NEEDED = 120;
         const K_FACTOR = 32;
 
-function calculateMovements() {
+// Add this after your paintings array and before other functions
+let currentUser = '';
+
+function setUsername() {
+    const usernameInput = document.getElementById('username');
+    currentUser = usernameInput.value.trim();
+    if (currentUser) {
+        usernameInput.disabled = true;
+        document.getElementById('comparison').style.display = 'flex';
+    } else {
+        alert('Please enter a name');
+    }
+}
+
+        
+        function calculateMovements() {
     if (comparisonCount === 0) return {
         averageMovement: 0,
         maxMovement: 0,
@@ -570,6 +606,8 @@ const sendData = {
     winner: winner.id,
     loser: loser.id,
     type: 'preference'
+     userId: currentUser  // Add this line
+
 };
 console.log('Sending this data:', sendData);
 
@@ -577,6 +615,8 @@ console.log('Sending this data:', sendData);
     winner: winner.id,
     loser: loser.id,
     type: 'preference'
+     userId: currentUser  // Add this line
+
 };
 console.log('Request URL:', 'https://art-comparison.vercel.app/api/comparisons.js');
 console.log('Request data:', requestData);

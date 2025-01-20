@@ -560,7 +560,7 @@ function selectImage(side) {
     const winner = side === 'left' ? currentPair[0] : currentPair[1];
     const loser = side === 'left' ? currentPair[1] : currentPair[0];
 
-    // First update local state
+    // Update local state and UI immediately
     updateEloRatings(winner, loser);
     winner.matches++;
     loser.matches++;
@@ -573,7 +573,6 @@ function selectImage(side) {
         type: 'preference'
     });
 
-    // Update UI
     comparisonCount++;
     updateStats();
     updateRankings();
@@ -587,11 +586,7 @@ function selectImage(side) {
     };
     localStorage.setItem('artComparisons', JSON.stringify(saveState));
 
-    // Save to database with fallback URL
-    const apiUrl = window.location.hostname === 'localhost' 
-        ? 'http://localhost:3000/api/comparisons'
-        : '/api/comparisons';
-
+    // Save to database
     const data = {
         winner: winner.id,
         loser: loser.id,
@@ -600,7 +595,7 @@ function selectImage(side) {
 
     console.log('Sending data to API:', data);
 
-    fetch(apiUrl, {
+    fetch('https://art-comparison.vercel.app/api/comparisons', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -608,20 +603,30 @@ function selectImage(side) {
         body: JSON.stringify(data)
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        console.log('API Response status:', response.status);
         return response.json();
     })
-    .then(result => {
-        console.log('Save successful:', result);
-    })
-    .catch(error => {
-        console.log('Save error:', error);
-        // Continue with UI updates even if save fails
-    });
+    .then(result => console.log('Save successful:', result))
+    .catch(error => console.log('Save attempted:', error));
 }
-      
+```
+
+And keep your original `dontKnow` function:
+
+```javascript
+function dontKnow() {
+    if (currentPair.length !== 2) return;
+
+    comparisons.push({
+        painting1: currentPair[0].id,
+        painting2: currentPair[1].id,
+        timestamp: Date.now(),
+        type: 'unknown'
+    });
+
+    loadNewComparison();
+} 
+        
      function dontKnow() {
     if (currentPair.length !== 2) return;
 

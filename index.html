@@ -556,7 +556,6 @@ function calculateMovements() {
             const winner = side === 'left' ? currentPair[0] : currentPair[1];
             const loser = side === 'left' ? currentPair[1] : currentPair[0];
 
-            // Add these new lines HERE
             console.log('Making comparison:', { winner, loser });
             fetch('/api/comparisons', {
                 method: 'POST',

@@ -1,6 +1,6 @@
-const { connectToDatabase } = require('../db');
+import { connectToDatabase } from '../db';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
     // Set CORS headers if needed
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');

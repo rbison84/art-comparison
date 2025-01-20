@@ -574,7 +574,7 @@ function selectImage(side) {
             
         // Use setTimeout to make this non-blocking
         setTimeout(() => {
-            fetch(`${API_BASE_URL}/api/comparisons`, {
+            fetch(`/api/comparisons`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

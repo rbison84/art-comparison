@@ -1,9 +1,9 @@
-
-
 import { connectToDatabase } from '../db';
 
 export default async function handler(req, res) {
-    // Set CORS headers if needed
+    console.log('API route started');
+    
+    // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -14,13 +14,13 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Connect to database
+        console.log('About to connect to database');
         const { db } = await connectToDatabase();
+        console.log('Connected to database');
 
         if (req.method === 'POST') {
-     console.log('Received POST request');
-    console.log('Request body:', req.body);
-    console.log('Request headers:', req.headers);
+            console.log('POST method detected');
+            console.log('Request body:', req.body);
             
             // Validate request body
             const { winner, loser, type } = req.body;
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
         }
 
         else if (req.method === 'GET') {
-            console.log('Processing GET request');
+            console.log('GET request detected');
             
             try {
                 // Get query parameters
@@ -120,4 +120,4 @@ export default async function handler(req, res) {
             message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
-};
+}

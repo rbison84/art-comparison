@@ -19,6 +19,10 @@
             margin: 20px 0;
             gap: 20px;
         }
+
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000'  // Local development
+    : '';  // Production (Vercel)
         
         .image-container {
             text-align: center;

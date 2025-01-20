@@ -566,30 +566,32 @@ function selectImage(side) {
         loser: loser.id
     });
 
-fetch('https://art-comparison.vercel.app/api/comparisons.js', {
+const sendData = {
+    winner: winner.id,
+    loser: loser.id,
+    type: 'preference'
+};
+console.log('Sending this data:', sendData);
+    error);
+
+    fetch('https://art-comparison.vercel.app/api/comparisons.js', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     },
-    body: JSON.stringify({
-        winner: winner.id,
-        loser: loser.id,
-        type: 'preference'
-    })
+    body: JSON.stringify(sendData)
 })
 .then(async response => {
-    console.log('Response status:', response.status);
-    const text = await response.text();
-    console.log('Full response text:', text);
-    return JSON.parse(text);
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.log('Server error response:', errorText);
+        throw new Error(errorText);
+    }
+    return response.json();
 })
-.then(data => console.log('Response data:', data))
-.catch(error => {
-    console.log('Error type:', error.constructor.name);
-    console.log('Error message:', error.message);
-    console.log('Full error:', error);
-});
+.then(data => console.log('Success:', data))
+.catch(error => console.log('Error details:', error.message));
 
     // Update local state and UI
     updateEloRatings(winner, loser);

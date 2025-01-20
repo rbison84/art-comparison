@@ -566,7 +566,7 @@ function selectImage(side) {
         loser: loser.id
     });
 
-    fetch('/api/comparisons', {
+fetch('https://art-comparison.vercel.app/api/comparisons', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

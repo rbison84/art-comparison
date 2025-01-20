@@ -18,7 +18,9 @@ export default async function handler(req, res) {
         const { db } = await connectToDatabase();
 
         if (req.method === 'POST') {
-            console.log('Processing POST request');
+     console.log('Received POST request');
+    console.log('Request body:', req.body);
+    console.log('Request headers:', req.headers);
             
             // Validate request body
             const { winner, loser, type } = req.body;

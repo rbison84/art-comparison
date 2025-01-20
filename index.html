@@ -560,40 +560,7 @@ function selectImage(side) {
     const winner = side === 'left' ? currentPair[0] : currentPair[1];
     const loser = side === 'left' ? currentPair[1] : currentPair[0];
 
-    // Log the comparison locally
-    console.log('Making comparison:', {
-        winner: winner.id,
-        loser: loser.id
-    });
-
-    // Attempt database save without blocking the UI
-    try {
-        const API_BASE_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3000' 
-            : '';
-            
-        // Use setTimeout to make this non-blocking
-        setTimeout(() => {
-            fetch(`${API_BASE_URL}/api/comparisons`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    winner: winner.id,
-                    loser: loser.id,
-                    type: 'preference'
-                })
-            })
-            .then(response => response.json())
-            .then(data => console.log('Database save:', data))
-            .catch(error => console.log('Database save failed:', error));
-        }, 0);
-    } catch (error) {
-        console.log('Fetch attempt failed:', error);
-    }
-
-    // Update local state and UI
+    // First update local state
     updateEloRatings(winner, loser);
     winner.matches++;
     loser.matches++;
@@ -606,6 +573,7 @@ function selectImage(side) {
         type: 'preference'
     });
 
+    // Update UI
     comparisonCount++;
     updateStats();
     updateRankings();
@@ -618,7 +586,31 @@ function selectImage(side) {
         paintings
     };
     localStorage.setItem('artComparisons', JSON.stringify(saveState));
+
+    // Save to database
+    const data = {
+        winner: winner.id,
+        loser: loser.id,
+        type: 'preference'
+    };
+
+    console.log('Sending data to API:', data);
+
+    fetch('https://art-comparison.vercel.app/api/comparisons', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        console.log('API Response status:', response.status);
+        return response.json();
+    })
+    .then(result => console.log('Save successful:', result))
+    .catch(error => console.log('Save attempted:', error));
 }
+      
         function dontKnow() {
             if (currentPair.length !== 2) return;
 

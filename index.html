@@ -554,42 +554,48 @@ function calculateMovements() {
             winner.wins++;
         }
 
-        function selectImage(side) {
-            if (currentPair.length !== 2) return;
+function selectImage(side) {
+    if (currentPair.length !== 2) return;
 
-            const winner = side === 'left' ? currentPair[0] : currentPair[1];
-            const loser = side === 'left' ? currentPair[1] : currentPair[0];
+    const winner = side === 'left' ? currentPair[0] : currentPair[1];
+    const loser = side === 'left' ? currentPair[1] : currentPair[0];
 
-            console.log('Making comparison:', { winner, loser });
-            fetch('/api/comparisons', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    winner: winner.id,
-                    loser: loser.id,
-                    type: 'preference'
-                })
-            })
-            .then(response => response.json())
-            .then(data => console.log('API response:', data))
-            .catch(error => console.error('API error:', error));
+    console.log('Making comparison:', {
+        winner: winner.id,
+        loser: loser.id
+    });
 
-            updateEloRatings(winner, loser);
-
-            comparisons.push({
-                winner: winner.id,
-                loser: loser.id,
-                timestamp: Date.now(),
-                type: 'preference'
-            });
-
-            comparisonCount++;
-            updateStats();
-            updateRankings();
-            loadNewComparison();
+    fetch(`${API_BASE_URL}/api/comparisons`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            winner: winner.id,
+            loser: loser.id,
+            type: 'preference'
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Comparison saved successfully:', data);
+        // Update UI accordingly
+        updateEloRatings(winner, loser);
+        comparisonCount++;
+        updateStats();
+        updateRankings();
+        loadNewComparison();
+    })
+    .catch(error => {
+        console.error('Error saving comparison:', error);
+        alert('Error saving comparison. Please try again.');
+    });
+}
 
         function dontKnow() {
             if (currentPair.length !== 2) return;

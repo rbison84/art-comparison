@@ -560,13 +560,45 @@ function selectImage(side) {
     const winner = side === 'left' ? currentPair[0] : currentPair[1];
     const loser = side === 'left' ? currentPair[1] : currentPair[0];
 
-    // First update the UI and local state
-    updateEloRatings(winner, loser);
-    comparisonCount++;
-    updateStats();
-    updateRankings();
+    // Log the comparison locally
+    console.log('Making comparison:', {
+        winner: winner.id,
+        loser: loser.id
+    });
 
-    // Store comparison locally
+    // Attempt database save without blocking the UI
+    try {
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : '';
+            
+        // Use setTimeout to make this non-blocking
+        setTimeout(() => {
+            fetch(`${API_BASE_URL}/api/comparisons`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    winner: winner.id,
+                    loser: loser.id,
+                    type: 'preference'
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log('Database save:', data))
+            .catch(error => console.log('Database save failed:', error));
+        }, 0);
+    } catch (error) {
+        console.log('Fetch attempt failed:', error);
+    }
+
+    // Update local state and UI
+    updateEloRatings(winner, loser);
+    winner.matches++;
+    loser.matches++;
+    winner.wins++;
+
     comparisons.push({
         winner: winner.id,
         loser: loser.id,
@@ -574,33 +606,10 @@ function selectImage(side) {
         type: 'preference'
     });
 
-    // Load new comparison immediately to keep the UI responsive
+    comparisonCount++;
+    updateStats();
+    updateRankings();
     loadNewComparison();
-
-    // Then try to save to database in the background
-    const API_BASE_URL = window.location.hostname === 'localhost' 
-        ? 'http://localhost:3000' 
-        : '';
-
-    fetch(`${API_BASE_URL}/api/comparisons`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            winner: winner.id,
-            loser: loser.id,
-            type: 'preference'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Comparison saved to database:', data);
-    })
-    .catch(error => {
-        console.log('Note: Comparison saved locally but database save failed:', error);
-        // Don't alert the user - just log to console to avoid interrupting the experience
-    });
 
     // Save state to localStorage
     const saveState = {
@@ -610,7 +619,6 @@ function selectImage(side) {
     };
     localStorage.setItem('artComparisons', JSON.stringify(saveState));
 }
-
         function dontKnow() {
             if (currentPair.length !== 2) return;
 

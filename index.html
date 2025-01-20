@@ -193,7 +193,7 @@ const API_BASE_URL = window.location.hostname === 'localhost'
                 <div class="artwork-artist" id="left-artist"></div>
                 <div class="artwork-year" id="left-year"></div>
             </div>
-            <button onclick="selectImage('left')">Select Left Painting</button>
+           <button onclick="selectImage('left')" class="select-button">Select Left Painting</button> 
         </div>
         
         <div class="image-container">
@@ -203,13 +203,13 @@ const API_BASE_URL = window.location.hostname === 'localhost'
                 <div class="artwork-artist" id="right-artist"></div>
                 <div class="artwork-year" id="right-year"></div>
             </div>
-            <button onclick="selectImage('right')">Select Right Painting</button>
+            <button onclick="selectImage('right')" class="select-button">Select Right Painting</button>
         </div>
     </div>
 
     <div class="dont-know">
-        <button onclick="dontKnow()">Don't know either painting</button>
-    </div>
+    <button onclick="dontKnow()">Don't know either painting</button>
+</div>
 
 <div class="stats">
     <div>Comparisons made: <span id="comparison-count">0</span></div>
@@ -587,7 +587,11 @@ function selectImage(side) {
     };
     localStorage.setItem('artComparisons', JSON.stringify(saveState));
 
-    // Save to database
+    // Save to database with fallback URL
+    const apiUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3000/api/comparisons'
+        : '/api/comparisons';
+
     const data = {
         winner: winner.id,
         loser: loser.id,
@@ -596,7 +600,7 @@ function selectImage(side) {
 
     console.log('Sending data to API:', data);
 
-    fetch('https://art-comparison.vercel.app/api/comparisons', {
+    fetch(apiUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -604,22 +608,67 @@ function selectImage(side) {
         body: JSON.stringify(data)
     })
     .then(response => {
-        console.log('API Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         return response.json();
     })
-    .then(result => console.log('Save successful:', result))
-    .catch(error => console.log('Save attempted:', error));
+    .then(result => {
+        console.log('Save successful:', result);
+    })
+    .catch(error => {
+        console.log('Save error:', error);
+        // Continue with UI updates even if save fails
+    });
 }
       
-        function dontKnow() {
-            if (currentPair.length !== 2) return;
+     function dontKnow() {
+    if (currentPair.length !== 2) return;
 
-            comparisons.push({
-                painting1: currentPair[0].id,
-                painting2: currentPair[1].id,
-                timestamp: Date.now(),
-                type: 'unknown'
-            });
+    // Store the skip in local comparisons
+    comparisons.push({
+        winner: null,
+        loser: null,
+        paintings: [currentPair[0].id, currentPair[1].id],
+        timestamp: Date.now(),
+        type: 'skip'
+    });
+
+    // Save to database with fallback URL
+    const apiUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3000/api/comparisons'
+        : '/api/comparisons';
+
+    const data = {
+        paintings: [currentPair[0].id, currentPair[1].id],
+        type: 'skip'
+    };
+
+    console.log('Sending skip data to API:', data);
+
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        console.log('Skip saved:', result);
+    })
+    .catch(error => {
+        console.log('Skip save error:', error);
+    });
+
+    // Update UI
+    loadNewComparison();
+}
 
             loadNewComparison();
         }

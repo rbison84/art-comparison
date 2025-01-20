@@ -1,4 +1,4 @@
-import { connectToDatabase } from '../db.js';
+import { connectToDatabase } from './db.js';
 
 export default async function handler(req, res) {
     console.log('API route started');

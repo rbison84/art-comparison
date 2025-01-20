@@ -1,23 +1,50 @@
 const { MongoClient } = require('mongodb');
 
-// MongoDB URI (loaded from environment variable)
+// Check for MongoDB URI
+if (!process.env.MONGODB_URI) {
+    throw new Error('Please define MONGODB_URI environment variable in your .env.local file or Vercel project settings');
+}
+
 const uri = process.env.MONGODB_URI;
-console.log("MongoDB URI Loaded:", uri); // Only for debugging locally
+const options = {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+};
 
-// MongoDB client instance
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+// Cache variables
+let cachedClient = null;
+let cachedDb = null;
 
-// Function to connect to MongoDB (with async/await)
 async function connectToDatabase() {
+    // If we have a cached connection, return it
+    if (cachedClient && cachedDb) {
+        return {
+            client: cachedClient,
+            db: cachedDb,
+        };
+    }
+
+    // If no cached connection, create a new one
     try {
-        // Connect to the database
+        const client = new MongoClient(uri, options);
         await client.connect();
-        console.log("Successfully connected to MongoDB!");
+        const db = client.db('art-ranking'); // Your database name
+
+        // Cache the connection
+        cachedClient = client;
+        cachedDb = db;
+
+        return {
+            client: cachedClient,
+            db: cachedDb,
+        };
     } catch (error) {
-        console.error("MongoDB connection error:", error);
-        throw error; // Rethrow error to handle it in the calling function
+        console.error('MongoDB Connection Error:', error);
+        throw new Error('Unable to connect to database');
     }
 }
 
-// Export the connect function and client
-module.exports = { client, connectToDatabase };
+module.exports = { connectToDatabase };

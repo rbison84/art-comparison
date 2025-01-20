@@ -1,8 +1,7 @@
-const { MongoClient } = require('mongodb');
+import { MongoClient } from 'mongodb';
 
-// Check for MongoDB URI
 if (!process.env.MONGODB_URI) {
-    throw new Error('Please define MONGODB_URI environment variable in your .env.local file or Vercel project settings');
+    throw new Error('Please define MONGODB_URI environment variable');
 }
 
 const uri = process.env.MONGODB_URI;
@@ -14,12 +13,10 @@ const options = {
     socketTimeoutMS: 45000,
 };
 
-// Cache variables
 let cachedClient = null;
 let cachedDb = null;
 
-async function connectToDatabase() {
-    // If we have a cached connection, return it
+export async function connectToDatabase() {
     if (cachedClient && cachedDb) {
         return {
             client: cachedClient,
@@ -27,13 +24,11 @@ async function connectToDatabase() {
         };
     }
 
-    // If no cached connection, create a new one
     try {
         const client = new MongoClient(uri, options);
         await client.connect();
-        const db = client.db('art-ranking'); // Your database name
+        const db = client.db('art-ranking');
 
-        // Cache the connection
         cachedClient = client;
         cachedDb = db;
 
@@ -46,5 +41,3 @@ async function connectToDatabase() {
         throw new Error('Unable to connect to database');
     }
 }
-
-module.exports = { connectToDatabase };

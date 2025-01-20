@@ -619,18 +619,19 @@ function selectImage(side) {
     };
     localStorage.setItem('artComparisons', JSON.stringify(saveState));
 }
-        function dontKnow() {
-            if (currentPair.length !== 2) return;
+        
+      function dontKnow() {
+    if (currentPair.length !== 2) return;
 
-            comparisons.push({
-                painting1: currentPair[0].id,
-                painting2: currentPair[1].id,
-                timestamp: Date.now(),
-                type: 'unknown'
-            });
+    comparisons.push({
+        painting1: currentPair[0].id,
+        painting2: currentPair[1].id,
+        timestamp: Date.now(),
+        type: 'unknown'
+    });
 
-            loadNewComparison();
-        }
+    loadNewComparison();
+}
 
         function updateRankings() {
             const rankedPaintings = [...paintings].sort((a, b) => b.elo - a.elo);

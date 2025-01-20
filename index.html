@@ -556,22 +556,22 @@ function calculateMovements() {
             const winner = side === 'left' ? currentPair[0] : currentPair[1];
             const loser = side === 'left' ? currentPair[1] : currentPair[0];
 
-              console.log('Making comparison:', { winner, loser });
-
+            // Add these new lines HERE
+            console.log('Making comparison:', { winner, loser });
             fetch('/api/comparisons', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            winner: winner.id,
-            loser: loser.id,
-            type: 'preference'
-        })
-    })
-    .then(response => response.json())
-    .then(data => console.log('API response:', data))
-    .catch(error => console.error('API error:', error));
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    winner: winner.id,
+                    loser: loser.id,
+                    type: 'preference'
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log('API response:', data))
+            .catch(error => console.error('API error:', error));
 
             updateEloRatings(winner, loser);
 

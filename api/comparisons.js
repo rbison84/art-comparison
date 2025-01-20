@@ -1,5 +1,6 @@
 const client = require('./db');
 
+console.log("MongoDB URI loaded:", process.env.MONGODB_URI); // Add this line to verify the URI
 console.log(process.env.MONGODB_URI); // Logs the URI to verify it's working
 
 module.exports = async (req, res) => {

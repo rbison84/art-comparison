@@ -582,23 +582,24 @@ console.log('Request URL:', 'https://art-comparison.vercel.app/api/comparisons.j
 console.log('Request data:', requestData);
 console.log('Request data as JSON:', JSON.stringify(requestData));
 
-    fetch('https://art-comparison.vercel.app/api/comparisons.js', {
+fetch('https://art-comparison.vercel.app/api/comparisons.js', {
     method: 'POST',
     headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Content-Type': 'application/json'
     },
-    body: JSON.stringify(sendData)
+    body: JSON.stringify(requestData)
 })
 .then(async response => {
-    if (!response.ok) {
-        const errorText = await response.text();
-        console.log('Server error response:', errorText);
-        throw new Error(errorText);
+    console.log('Response status code:', response.status);
+    const responseText = await response.text();
+    console.log('Raw response:', responseText);
+    try {
+        return JSON.parse(responseText);
+    } catch (e) {
+        throw new Error('Failed to parse response: ' + responseText);
     }
-    return response.json();
 })
-.then(data => console.log('Success:', data))
+.then(data => console.log('Parsed response:', data))
 .catch(error => console.log('Error details:', error.message));
 
     // Update local state and UI

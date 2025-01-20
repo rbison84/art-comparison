@@ -566,32 +566,20 @@ function selectImage(side) {
         loser: loser.id
     });
 
-    // Attempt database save without blocking the UI
-    try {
-        const API_BASE_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:3000' 
-            : '';
-            
-        // Use setTimeout to make this non-blocking
-        setTimeout(() => {
-            fetch(`/api/comparisons`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    winner: winner.id,
-                    loser: loser.id,
-                    type: 'preference'
-                })
-            })
-            .then(response => response.json())
-            .then(data => console.log('Database save:', data))
-            .catch(error => console.log('Database save failed:', error));
-        }, 0);
-    } catch (error) {
-        console.log('Fetch attempt failed:', error);
-    }
+    fetch('/api/comparisons', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            winner: winner.id,
+            loser: loser.id,
+            type: 'preference'
+        })
+    })
+    .then(response => response.json())
+    .then(data => console.log('Database save:', data))
+    .catch(error => console.log('Database save failed:', error));
 
     // Update local state and UI
     updateEloRatings(winner, loser);

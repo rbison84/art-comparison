@@ -1,5 +1,7 @@
 const client = require('./db');
 
+console.log(process.env.MONGODB_URI); // Logs the URI to verify it's working
+
 module.exports = async (req, res) => {
     try {
         console.log('Attempting connection...');

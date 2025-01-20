@@ -573,6 +573,15 @@ const sendData = {
 };
 console.log('Sending this data:', sendData);
 
+    const requestData = {
+    winner: winner.id,
+    loser: loser.id,
+    type: 'preference'
+};
+console.log('Request URL:', 'https://art-comparison.vercel.app/api/comparisons.js');
+console.log('Request data:', requestData);
+console.log('Request data as JSON:', JSON.stringify(requestData));
+
     fetch('https://art-comparison.vercel.app/api/comparisons.js', {
     method: 'POST',
     headers: {
